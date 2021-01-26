@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+/BLB_DB/BLB_DB/.vs/BLB_DB/v16
+/BLB_DB/BLB_DB/BLB_DB/bin/Debug
+/BLB_DB/BLB_DB/BLB_DB/obj/Debug
+/BLB_DB/BLB_DB/BLB_DB/BLB_DB.dbmdl
+/BLB_DB/BLB_DB/BLB_DB/BLB_DB.jfm
+/BLB_DB/BLB_DB/BLB_DB/BLB_DB.refactorlog
