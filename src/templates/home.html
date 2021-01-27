@@ -2,7 +2,13 @@
 {% extends "layout.html" %}
 {% block content %}
 <div>
-    <h3>Hello, Abby</h3>
+    <h3>Hello, {% if users %}
+        {{ users }}
+        {% else %}
+        {{'there'}}
+        {% endif %}
+    </h3>
+    <h4>Today’s Accomplishments Were Yesterday’s Impossibilities<h4>
 </div>
 
 {% endblock %}
