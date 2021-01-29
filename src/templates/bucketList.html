@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block content %}
+<div>
+    <form method="POST" action="/bucketList">
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Preference</th>
+                    <th>Description</th>
+                    <th>Cost</th>
+                    <th>Title</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in posts %}
+            <tr>
+                <td>
+                <input type="checkbox">
+                <td>
+                    {{ item.Todo_items_Order}}
+                </td>
+                <td>
+                    {{ item.Description}}
+                </td>
+                <td>
+                    {{ item.Costs}}
+                </td>
+                <td>
+                    {{ item.Title}}
+                </td>
+                <tr class="active-row">
+                </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+        <input type="submit" value="Delete" />
+        <!-- <button type="Update" name="Update" value="Update">
+        </button> -->
+            <!-- <button type="Delete" name="Delete" value="Delete"></button> -->
+    </form>
+</div>
+{% endblock content %}

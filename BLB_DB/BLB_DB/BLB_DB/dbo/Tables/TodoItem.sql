@@ -6,5 +6,6 @@
     [Costs] INT NOT NULL, 
     [created_on] DATE NOT NULL, 
     [updated_on] DATE NOT NULL, 
+    [Title] VARCHAR(50) NOT NULL, 
     CONSTRAINT [FK_TodoItem_ToTable] FOREIGN KEY ([Todo_List_ID]) REFERENCES [TodoList]([Todo_List_ID])
 )

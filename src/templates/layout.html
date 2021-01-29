@@ -7,15 +7,14 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
-
+    <link rel="stylesheet" href="/static/main.css"/>
     {% if title %}
         <title>Post-Covid Bucket List Budget Planner- {{ title }}</title>
     {% else %}
         <title>Post-Covid Bucket List Budget Planner</title>
     {% endif %}
 </head>
+
 <body>
     <header class="site-header">
       <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
@@ -46,9 +45,9 @@
         <div class="col-md-4">
           <div class="content-section">
             <h3>More Here</h3>
-            <p class='text-muted'>Good time ahead! Remember that we are all in it together.
+            <p class='text-muted'>Good time ahead! We are all in it together.
               <ul class="list-group">
-                <li class="list-group-item list-group-item-light">My Bucket List</li>
+                <li class="list-group-item list-group-item-light"><a class="ml-2" href="{{ url_for('bucketList') }}">My Bucket List</li>
                 <li class="list-group-item list-group-item-light">My Saving Journey</li>
                 <li class="list-group-item list-group-item-light">My Account</li>
               </ul>
