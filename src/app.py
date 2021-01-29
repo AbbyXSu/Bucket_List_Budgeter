@@ -38,100 +38,38 @@ def register():
 @app.route('/login', methods=["GET","POST"])
 def login():
     form = LoginForm()
+    
     if form.validate_on_submit():
-        if form.username.data == 'username':
+        result = db.session.query(Users).filter (Users.Username == form.username.data)
+        if result and result.first().Username == form.username.data:
             flash('You have been logged in!', 'success')
-            return redirect(url_for('home'))
+            return redirect(url_for('home', users=result.first().first_name))
         else:
             flash('Login Unsuccessful. Please check username', 'danger')
     return render_template('login.html', title ='Login',form =form)
 #---------------------------------------------------------------------------------------------------#
-# @app.route('/bucketList', methods=['GET','POST'])
-# def bucketList():
-#     form = TodoItemForm()
-#     new_item: TodoItem = None
-#     #headings is used to create the table view column headers
-#     headings=('Priority','Title','Description','Costs','Created_on','Last_update')
-#     #posts= [dict(details = form.AllItems(i)) for i in TodoItem.query.all()]
-#     #making a form to make a new bucketlist 
-#     # (i.e. submit a collection of todo items & generate a list)
-#     #user specific todo list
-
-#     #on get -> return a bucketlist view 
-#     # (can create lists and/or display given state)
-#     # filter by 
-#     #on post -> read from request form 
-#     # & generate a todolist entity + insert all provided todo items
-#     # if invalid, return the validation errors
-#     posts= [dict(details = form.AllItems(i)) for i in db.session.query(TodoItem).all()]
-#     try:
-#         if request.form:
-#             new_item = TodoItem(
-#             Todo_items_Order = form.Itm_priority.data,
-#             Title = form.Title.data,
-#             Description = form.Description.data,
-#             Costs = form.Costs.data)
-#             db.session.add(new_item)
-#             db.session.commit()
-
-#     except dberr.IntegrityError:
-#             flash(f'Item with the same priority has already been created, try again!')
-#             return render_template('bucketList.html', title ='My_Bucket_List',form =form)
-
-#     if form.validate_on_submit():
-#         flash(f'Item created for {form.Title.data}! in the Bucket List', 'success')
-#         return redirect(url_for('bucketList'),headings =headings, title ='My_Bucket_List',form =form, posts = posts)
-        
-#     return render_template('bucketList.html', headings =headings, title ='My_Bucket_List',posts = posts,form =form)
-
 
 @app.route('/bucketList', methods=['GET','POST'])
 def bucketList():
-    """
-    HTTP Request handler for /bucketlist resource.
-    Returns forms for viewing & managing bucketlist & todo items
-    """
-
     request_user = request.args.get('user') if request.args else None
     form = TodoItemForm()
     new_item: TodoItem = None
-    #headings is used to create the table view column headers
-    headings=('Priority','Title','Description','Costs','Created_on','Last_update')
-    #posts = [dict(details = form.AllItems(i)) for i in db.session.query(TodoItem).all()]
-    posts = _read_bucket_list(request_user)
+    posts = read_bucket_list(request_user)
 
     if request.method == 'GET':
-        return _get_bucket_list(headings, posts, form, user=request_user)
+        #need a different method here which makes a view. return a render template
+        return read_bucket_list( posts, form, user=request_user)
 
     if request.method == 'POST':
-        return _create_bucket_list(form, headings, posts)
+        return create_bucket_list(form, posts)
 
-
-def _read_bucket_list(user = None):
-    """
-    reads the bucketlist and todo items from db, matching user
-    """
+def read_bucket_list(posts, form=None, user = None):
+    #this method should get the bucketlist from db
     posts = db.session.query(TodoList).all()
     todo_list = posts[0].todoitem_collection
-
     return todo_list
 
-def _get_bucket_list(headings, posts, form, user = None):
-    """
-    on get -> return a bucketlist view 
-    (can create lists and/or display given state)
-    filter by user
-    """
-    #get bucketlists matching given username. If user not supplied, what to do?
-    return render_template('bucketList.html', headings =headings, title ='My_Bucket_List', posts = posts, form = None)
-
-
-def _create_bucket_list(form, headings, posts):
-    """
-    on post -> read from request form 
-    & generate a todolist entity + insert all provided todo items
-    if invalid, return the validation errors
-    """
+def create_bucket_list(form, posts):
     try:
         if request.form:
             new_item = TodoItem(
@@ -148,30 +86,9 @@ def _create_bucket_list(form, headings, posts):
 
     if form.validate_on_submit():
         flash(f'Item created for {form.Title.data}! in the Bucket List', 'success')
-        return redirect(url_for('bucketList'),headings =headings, title ='My_Bucket_List', form = form, posts = posts)
+        return redirect(url_for('bucketList'), title ='My_Bucket_List', form = form, posts = posts)
         
-    return render_template('bucketList.html', headings =headings, title ='My_Bucket_List', posts = posts, form = form)
-
-
-@app.route('/update', methods=['GET','POST'])
-def update():
-    headings=('Priority','Title','Description','Costs','Created_on','Last_update')
-    posts = TodoItem.query.all
-    db.session.commit()
-    return redirect (url_for('bucketList'),headings=headings, posts = posts)
-
-# @app.route("/delete/<id>", methods=["POST"])
-# def delete():
-
-#     DeleteItem = TodoItem.query.filter_by(TodoList.Todo_List_ID=1).first()
-#     db.session.delete(DeleteItem)
-#     db.session.commit()
-#     return redirect("/bucketList")
-
-#--------------------------------------------------------------------------------------------------------------------------#
-
-
-
+    return render_template('bucketList.html', title ='My_Bucket_List', posts = posts, form = form)
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True, host='0.0.0.0')

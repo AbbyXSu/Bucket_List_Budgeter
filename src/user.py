@@ -16,7 +16,7 @@ class RegistrationForm(FlaskForm):
                             validators=[DataRequired(), length(min=2,max=20)])
     last_name = StringField('last_name',
                             validators =[DataRequired(), length(min=2,max =20)])
-    submit =SubmitField ('Sign Up')
+    Submit =SubmitField ('Sign Up')
 
 class LoginForm(FlaskForm):
     username = StringField('username', 
