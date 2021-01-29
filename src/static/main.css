@@ -11,7 +11,7 @@ body {
   }
   
   .bg-steel {
-    background-color: #5f788a;
+    background-color: #54d2d6;
   }
   
   .site-header .navbar-nav .nav-link {
@@ -39,7 +39,7 @@ body {
   }
   
   a.article-title:hover {
-    color: #428bca;
+    color: #41ced3;
     text-decoration: none;
   }
   
@@ -77,12 +77,6 @@ body {
     margin-bottom: 16px;
   }
   
-  .account-heading {
-    font-size: 2.5rem;
-  }
-  * {
-    font-family: sans-serif; /* Change your font family */
-  }
   
 @import url('https://fonts.googleapis.com/css?family=Montserrat|Open+Sans|Roboto');
   table{

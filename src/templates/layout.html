@@ -46,15 +46,16 @@
             <h3>More Here</h3>
             <p class='text-muted'>Good time ahead! We are all in it together.
               <ul class="list-group">
-                <li class="list-group-item list-group-item-light"><a class="ml-2" href="{{ url_for('bucketList') }}">My Bucket List</li>
-                <li class="list-group-item list-group-item-light"><a class="ml-2" href="{{ url_for('bucketList') }}">My Saving Journey</li>
-                <li class="list-group-item list-group-item-light"><a class="ml-2" href="{{ url_for('home') }}">My Account</li>
+                <li class="list-group-item list-group-item-light"><a class="ml-2" href="{{ url_for('bucketList', users= request.args.get('users')) }}">My Bucket List</li>
+                <li class="list-group-item list-group-item-light"><a class="ml-2" href="{{ url_for('bucketList',users= request.args.get('users')) }}">My Saving Journey</li>
+                <li class="list-group-item list-group-item-light"><a class="ml-2" href="{{ url_for('home', users= request.args.get('users')) }}">My Account</li>
               </ul>
             </p>
           </div>
         </div>
       </div>
     </main>
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>

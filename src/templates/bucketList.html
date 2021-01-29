@@ -1,103 +1,112 @@
 {% extends "layout.html" %}
 {% block content %}
-<div>
-    <form method="POST" action="/bucketList">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Action</th>
-                    <th>Preference</th>
-                    <th>Description</th>
-                    <th>Cost</th>
-                    <th>Title</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for item in posts %}
-            <tr>
-                <td>
-                <input type="checkbox">
-                <td>
-                    {{ item.Todo_items_Order}}
-                </td>
-                <td>
-                    {{ item.Description}}
-                </td>
-                <td>
-                    {{ item.Costs}}
-                </td>
-                <td>
-                    {{ item.Title}}
-                </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-        </table>
-        <input type="submit" value="Delete" class="btn btn-outline-info"/>
-        <input type="submit" value="Update"class="btn btn-outline-info"/>
-    </form>
-    <div class="content-section">
-        <form method="POST" action="">
-            {{ form.hidden_tag() }}
-            <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Join Today</legend>
-                <div class="form-group">
-                    {{ form.Item_priority.label(class="form-control-label") }}
-                    {% if form.Item_priority.errors %}
+<div class="grid-container">
+    <div class="grid-item">
+        <form method="POST" action="/bucketList">
+            <table class="table" {width: 100%;}>
+                <thead>
+                    <tr>
+                        <th>Choose</th>
+                        <th>Preference</th>
+                        <th>Title</th>
+                        <th>Cost</th>
+                        <th>Description</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in posts %}
+                    <tr>
+                        <td>
+                            <input type="checkbox">
+                        <td>
+                            {{ item.Todo_items_Order}}
+                        </td>
+                        <td>
+                            {{ item.Title}}
+                        </td>
+                        <td>
+                            {{ item.Costs}}
+                        </td>
+                        <td>
+                            {{ item.Description}}
+                        </td>
+                        <td>
+                            <input type="submit" value="Delete" class="btn btn-outline-info" />
+                            <input type="submit" value="Update" class="btn btn-outline-info" />
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+    </div>
+    <div class="grid-item">
+
+
+        <div class="content-section">
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                <fieldset class="form-group">
+                    <legend class="border-bottom mb-4">Creat Your Future Plan Here : </legend>
+                    <div class="form-group">
+                        {{ form.Item_priority.label(class="form-control-label") }}
+                        {% if form.Item_priority.errors %}
                         {{ form.Item_priority(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
                             {% for error in form.Item_priority.errors %}
-                                <span>{{ error }}</span>
+                            <span>{{ error }}</span>
                             {% endfor %}
                         </div>
-                    {% else %}
+                        {% else %}
                         {{ form.Item_priority(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    {{ form.Title.label(class="form-control-label") }}
-                    {% if form.Title.errors %}
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.Title.label(class="form-control-label") }}
+                        {% if form.Title.errors %}
                         {{ form.Title(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
                             {% for error in form.Title.errors %}
-                                <span>{{ error }}</span>
+                            <span>{{ error }}</span>
                             {% endfor %}
                         </div>
-                    {% else %}
+                        {% else %}
                         {{ form.Title(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div> 
-                <div class="form-group">
-                    {{ form.Description.label(class="form-control-label") }}
-                    {% if form.Description.errors %}
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.Description.label(class="form-control-label") }}
+                        {% if form.Description.errors %}
                         {{ form.Description(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
                             {% for error in form.Description.errors %}
-                                <span>{{ error }}</span>
+                            <span>{{ error }}</span>
                             {% endfor %}
                         </div>
-                    {% else %}
+                        {% else %}
                         {{ form.Description(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    {{ form.Costs.label(class="form-control-label") }}
-                    {% if form.Costs.errors %}
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.Costs.label(class="form-control-label") }}
+                        {% if form.Costs.errors %}
                         {{ form.Costs(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
                             {% for error in form.Description.errors %}
-                                <span>{{ error }}</span>
+                            <span>{{ error }}</span>
                             {% endfor %}
                         </div>
-                    {% else %}
+                        {% else %}
                         {{ form.Costs(class="form-control form-control-lg") }}
-                    {% endif %}
+                        {% endif %}
+                    </div>
+                </fieldset>
+                <div class="form-group">
+                    {{ form.Submit(class="btn btn-outline-info") }}
                 </div>
-            </fieldset>
-            <div class="form-group">
-                {{ form.submit(class="btn btn-outline-info") }}
-            </div>
-        </form>
-    </div> 
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock content %}

@@ -2,8 +2,8 @@
 {% extends "layout.html" %}
 {% block content %}
 <div>
-    <h3>Hello, {% if users %}
-        {{ users }}
+    <h3>Hello, {% if first_name %}
+        {{ first_name }}
         {% else %}
         {{'there'}}
         {% endif %}

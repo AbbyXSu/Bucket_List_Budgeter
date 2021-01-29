@@ -25,13 +25,13 @@ class LoginForm(FlaskForm):
     Submit =SubmitField ('Login')
 
 class TodoItemForm(FlaskForm):
-    Itm_priority = IntegerField('', 
+    Item_priority= IntegerField('Preference', 
                             validators=[DataRequired(), length(max=1), unique])
-    Title =StringField('title', 
+    Title =StringField('Title', 
                             validators=[DataRequired(), length(min=2, max=50)])
-    Description = StringField('title', 
+    Description = StringField('Description', 
                             validators=[DataRequired(), length(min=2, max=50)])
-    Costs = IntegerField('', 
+    Costs = IntegerField('Budget(£)', 
                             validators=[DataRequired()])
     Submit =SubmitField ('Submit')
 

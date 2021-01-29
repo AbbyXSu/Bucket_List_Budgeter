@@ -1,7 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
+
     <div class="content-section">
-        <form method="POST" action="">
+        <form method="POST" action='' >
+            <input type="hidden" name="next" value="{{ request.args.get('next', '') }}"/>
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Log In</legend>
