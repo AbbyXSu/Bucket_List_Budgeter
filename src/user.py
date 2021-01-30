@@ -26,7 +26,7 @@ class LoginForm(FlaskForm):
 
 class TodoItemForm(FlaskForm):
     Item_priority= IntegerField('Preference', 
-                            validators=[DataRequired(), length(max=1), unique])
+                            validators=[DataRequired()])
     Title =StringField('Title', 
                             validators=[DataRequired(), length(min=2, max=50)])
     Description = StringField('Description', 
