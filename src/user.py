@@ -2,7 +2,7 @@ from enum import unique
 from flask_wtf import FlaskForm
 from flask_wtf import validators
 from wtforms import StringField
-from wtforms.fields.simple import SubmitField, BooleanField
+from wtforms.fields.simple import SubmitField, BooleanField, TextField
 from wtforms.fields import IntegerField,SelectField,FieldList,FormField
 from wtforms.validators import DataRequired, length, EqualTo
 
@@ -27,9 +27,9 @@ class LoginForm(FlaskForm):
 class TodoItemForm(FlaskForm):
     Item_priority= IntegerField('Preference', 
                             validators=[DataRequired()])
-    Title =StringField('Title', 
+    Title =TextField('Title', 
                             validators=[DataRequired(), length(min=2, max=50)])
-    Description = StringField('Description', 
+    Description = TextField('Description', 
                             validators=[DataRequired(), length(min=2, max=50)])
     Costs = IntegerField('Budget(£)', 
                             validators=[DataRequired()])

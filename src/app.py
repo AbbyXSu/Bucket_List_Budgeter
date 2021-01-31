@@ -1,7 +1,9 @@
+from operator import and_
 import re
 from types import MethodDescriptorType
 from flask import Flask, redirect, render_template, request, flash
 from flask.helpers import url_for
+from flask_wtf import form
 from sqlalchemy.orm import query,sessionmaker
 from .user import RegistrationForm, LoginForm, TodoItemForm,TodoListForm,LedgerForm
 import sqlalchemy.exc as dberr
@@ -97,6 +99,26 @@ def create_bucket_item(form, id):
 
 @app.route('/bucketList/<id>/item/<itemId>', methods = ['GET','POST'])
 def bucket_list_item(id, itemId):
+    #if get, return the edit form populated with this item
+    if request.method == 'GET':
+        chosenItem = db.session.query(TodoItem).filter_by(Id = itemId, Todo_List_ID =id).first()
+        form = TodoItemForm()
+        form.Item_priority.data = chosenItem.Todo_items_Order
+        form.Title.data = chosenItem.Title
+        form.Description.data = chosenItem.Description
+        form.Costs.data = chosenItem.Costs
+        return render_template('updateItem.html', title =f'update {chosenItem.Title}',form =form,id = id, itemId =itemId)
+    if request.method == 'POST':
+        form = TodoItemForm(request.form)
+        chosenItem = db.session.query(TodoItem).filter_by(Id = itemId, Todo_List_ID =id).first()
+        chosenItem.Todo_items_Order = form.Item_priority.data
+        chosenItem.Title = form.Title.data
+        chosenItem.Description = form.Description.data
+        chosenItem.Costs = form.Costs.data
+        db.session.commit()
+        user = db.session.query(TodoList).filter_by(Todo_List_ID = id).first().Username
+        return redirect(url_for('bucketList', users=user))
+    #if post, apply update to the todo item and then redirect to bucketlist page
     pass
 
 
