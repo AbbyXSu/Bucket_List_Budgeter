@@ -44,7 +44,7 @@ class LedgerForm(FlaskForm):
     action_options= [('1', 'Deposit'), ('2', 'Withdrawal')]
     Action_log = SelectField('Action', 
                             validators=[DataRequired()], choices=action_options)
-    Value_in_GBP =IntegerField('', 
+    Value_in_GBP =IntegerField('Value/GBP', 
                             validators=[DataRequired()])
     Submit =SubmitField ('Submit')
 

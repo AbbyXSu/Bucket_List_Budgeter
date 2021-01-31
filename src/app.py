@@ -5,6 +5,7 @@ from flask import Flask, redirect, render_template, request, flash
 from flask.helpers import url_for
 from flask_wtf import form
 from sqlalchemy.orm import query,sessionmaker
+from werkzeug.utils import html
 from .user import RegistrationForm, LoginForm, TodoItemForm,TodoListForm,LedgerForm
 import sqlalchemy.exc as dberr
 from .conn import TodoList, db, app, Base, Users, TodoItem,Ledger,BudgetSummary,ActionLogType
@@ -61,7 +62,7 @@ def bucketList():
         return redirect(url_for('home'))
     form = TodoItemForm()
     new_item: TodoItem = None
-    posts, todoListId = read_bucket_list(request_user)
+    posts,todoListId = read_bucket_list(request_user)
 
     if request.method == 'GET':
         #need a different method here which makes a view. return a render template
@@ -71,11 +72,12 @@ def bucketList():
         #return create_bucket_item(form, posts,request_user)
         list_id = create_bucket_list(request_user)
         item_id = add_todoItem_to_list(list_id, form)
-        return render_template('bucketList.html',  title ='My_Bucket_List', posts = posts, form = form, bucketListId = str(list_id))
+        return render_template('bucketList.html',  title ='My_Bucket_List', posts = posts, form = form, bucketListId = str(list_id),users =request_user)
 
 
 @app.route('/bucketList/<id>/item', methods = ['GET','POST'])
-def create_bucket_item(form, id):
+def create_bucket_item(id):
+    form = TodoItemForm(request.form)
     request_user = request.args.get('users') if request.args else None
     if not request_user:
         flash('You do not have an account yet!, Create one!')
@@ -88,13 +90,14 @@ def create_bucket_item(form, id):
             #read the list
             posts = read_bucket_list(request_user)
             #return the bucketlist table view
-            return render_template('bucketList.html', title ='My_Bucket_List', posts = posts, bucketList_id = str(id), users =request_user)
+            #return render_template('bucketList.html', title ='My_Bucket_List', posts = posts, bucketList_id = str(id), users = request_user)
+            return redirect(url_for('bucketList', users=request_user))
         else:
             #return the view for invalid
-            return render_template('createItem.html', title ='My_Bucket_List', form = form, bucketList_id = str(id), users =request_user)
+            return render_template('createItem.html', title ='My_Bucket_List', form = form, bucketList_id = str(id), users = request_user)
     if request.method == 'GET':
         #return create item view which links to the given bucketlistId
-        return render_template('createItem.html', title ='Create_My_Bucket_Item',bucketList_id = str(id), users =request_user)
+        return render_template('createItem.html', title ='Create_My_Bucket_Item',bucketList_id = str(id), users = request_user, form = form)
 
 
 @app.route('/bucketList/<id>/item/<itemId>', methods = ['GET','POST'])
@@ -119,21 +122,23 @@ def bucket_list_item(id, itemId):
         user = db.session.query(TodoList).filter_by(Todo_List_ID = id).first().Username
         return redirect(url_for('bucketList', users=user))
     #if post, apply update to the todo item and then redirect to bucketlist page
-    pass
 
 
 @app.route('/bucketList/<id>/item/<itemId>/delete', methods = ['GET'])
 def delete_bucket_list_item(id, itemId):
     #delete from db
-    #redirect to the bucketlist endpoint    
-    
-    pass
+    #redirect to the bucketlist endpoint  
+    deleteItem = db.session.query(TodoItem).filter_by(Id = itemId, Todo_List_ID =id).first() 
+    db.session.delete(deleteItem)
+    db.session.commit()
+    user = db.session.query(TodoList).filter_by(Todo_List_ID = id).first().Username
+    return redirect(url_for('bucketList', id = id, itemId =itemId, users=user))
 
 
 def read_bucket_list(user = None):
     #this method should get the bucketlist from db
     posts = db.session.query(TodoList).filter (TodoList.Username == user).all()
-    list_todoItms = posts[0].todoitem_collection if posts and len(posts) > 0 else []
+    list_todoItms = list(posts[0].todoitem_collection) if posts and len(posts) > 0 else []
     todoListId = posts[0].Todo_List_ID if posts != [] else None
     return list_todoItms, todoListId
 
@@ -143,7 +148,8 @@ def get_bucket_list( posts, form, user = None, list_id = None):
         if not list_id:
             return render_template('createItem.html', title ='Create_My_Bucket_Item', users = user, form = form)
         else:
-            return render_template('createItem.html', title ='My_Bucket_List', posts = posts, bucketList_id = str(list_id), users = user, form = form)
+            #return render_template('createItem.html', title ='My_Bucket_List', posts = posts, bucketList_id = str(list_id), users = user, form = form)
+            return redirect(url_for('create_bucket_item', users = user, id = list_id))
 
         #in the CreateItem.html, for bucketListId = NONE, make the form submission url hook back to POST /bucketList
         #if the bucketlistid is given, make the view link to the /bucketList/{id}/item
@@ -175,6 +181,49 @@ def add_todoItem_to_list(listId, form = None):
         db.session.commit()
         return new_item.Id
     return None
+
+#------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+# @app.route('/budgetSummary', methods = ['GET','POST'])
+# def BudgetSummary():
+#     request_user = request.args.get('users') if request.args else None
+#     if not request_user:
+#         flash('You do not have an account yet!, Create one!')
+#         return redirect(url_for('home'))
+#     form = LedgerForm()
+#     summary,budgeter_ID = read_budgetSummary (request_user)
+
+#     if request.method == 'GET':
+#         return get_budgetSummary(summary, form, user = request_user, budgeter_ID = budgeter_ID)
+
+#     if request.method =='POST':
+#         pass
+
+
+# def read_budgetSummary(user=None):
+#     summary = db.session.query(BudgetSummary).filter(BudgetSummary.Username == user).all()
+#     balanceflow= summary[0].Ledger_collection if summary and len(summary)>0 else []
+#     budgeter_ID = summary[0].Budgeter_id if summary !=[] else None
+#     return balanceflow, budgeter_ID
+    
+# def get_budgetSummary(summary,form,user = None, budgeter_ID = None):
+#     if not summary:
+#         flash('Start your Saving journey here!')
+#         if not budgeter_ID:
+#             return render_template ('budgetAction.html', title ='Create_saving_Action', users = user, form = form)
+#         else:
+#             return render_template ('budgetAction.html', title ='BudgetSummary', summary=summary, budgeter_ID = str( budgeter_ID),users = user, form = form)
+#     else:
+#         return render_template ('budgetSummary.html',title ='My_budget_summary', summary =summary,form = form,budgeter_ID=budgeter_ID, users =user)
+
+# @app.route ('/budgetAction', methods =['GET','POST'])
+# def budgetAction():
+#     pass
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True, host='0.0.0.0')
