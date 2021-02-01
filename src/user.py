@@ -27,9 +27,9 @@ class LoginForm(FlaskForm):
 class TodoItemForm(FlaskForm):
     Item_priority= IntegerField('Preference', 
                             validators=[DataRequired()])
-    Title =TextField('Title', 
+    Title =StringField('Title', 
                             validators=[DataRequired(), length(min=2, max=50)])
-    Description = TextField('Description', 
+    Description = StringField('Description', 
                             validators=[DataRequired(), length(min=2, max=50)])
     Costs = IntegerField('Budget(£)', 
                             validators=[DataRequired()])

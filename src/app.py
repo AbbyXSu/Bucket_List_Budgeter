@@ -1,4 +1,5 @@
-from operator import and_
+from operator import add, and_, sub
+import operator
 import re
 from types import MethodDescriptorType
 from flask import Flask, redirect, render_template, request, flash
@@ -45,6 +46,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         result = db.session.query(Users).filter (Users.Username == form.username.data)
+        db.session.commit()
         if result and result.first() and result.first().Username == form.username.data:
             flash('You have been logged in!', 'success')
             return redirect(url_for('home',users =result.first().Username, first_name =result.first().first_name))
@@ -105,6 +107,7 @@ def bucket_list_item(id, itemId):
     #if get, return the edit form populated with this item
     if request.method == 'GET':
         chosenItem = db.session.query(TodoItem).filter_by(Id = itemId, Todo_List_ID =id).first()
+        db.session.commit()
         form = TodoItemForm()
         form.Item_priority.data = chosenItem.Todo_items_Order
         form.Title.data = chosenItem.Title
@@ -120,6 +123,7 @@ def bucket_list_item(id, itemId):
         chosenItem.Costs = form.Costs.data
         db.session.commit()
         user = db.session.query(TodoList).filter_by(Todo_List_ID = id).first().Username
+        db.session.commit()
         return redirect(url_for('bucketList', users=user))
     #if post, apply update to the todo item and then redirect to bucketlist page
 
@@ -132,12 +136,14 @@ def delete_bucket_list_item(id, itemId):
     db.session.delete(deleteItem)
     db.session.commit()
     user = db.session.query(TodoList).filter_by(Todo_List_ID = id).first().Username
+    db.session.commit()
     return redirect(url_for('bucketList', id = id, itemId =itemId, users=user))
 
 
 def read_bucket_list(user = None):
     #this method should get the bucketlist from db
     posts = db.session.query(TodoList).filter (TodoList.Username == user).all()
+    db.session.commit()
     list_todoItms = list(posts[0].todoitem_collection) if posts and len(posts) > 0 else []
     todoListId = posts[0].Todo_List_ID if posts != [] else None
     return list_todoItms, todoListId
@@ -192,23 +198,28 @@ def budgetSummary():
         return redirect(url_for('home'))
     form = LedgerForm(request.form)
     logs,budgeter_ID = read_budgetLedger (request_user)
-
+    balance =balance_calculator(logs)
+    list_todoItms, _ =read_bucket_list (request_user)
+    diff, percentage =performance_calculator(list_todoItms, logs)
     if request.method == 'GET':
-        return get_budgetLedger(logs, form, user = request_user, budgeter_ID = budgeter_ID)
+        return get_budgetLedger(logs, form, user = request_user, budgeter_ID = budgeter_ID,balance = balance, percentage =round(percentage,2), diff=diff)
 
     if request.method =='POST':
         budgeter_ID = create_budgetlog(request_user)
-        event_id = add_budgetActivity_to_Ledger (budgeter_ID,form)
+        #event_id = add_budgetActivity_to_Ledger (budgeter_ID,form)
         return render_template ('budgetSummary.html', title ='My_Saving Journey', logs=logs, budgeter_ID =str( budgeter_ID), users = request_user)
 
 
 def read_budgetLedger(user=None):
     logs = db.session.query(BudgetSummary).filter(BudgetSummary.Username == user).all()
+    db.session.commit()
     cashflow= list(logs[0].ledger_collection if logs and len(logs)>0 else [])
     budgeter_ID = logs[0].Budgeter_Id if logs !=[] else None
+    #format_action_type(cashflow)
     return cashflow, budgeter_ID
     
-def get_budgetLedger(logs,form,user = None, budgeter_ID = None):
+def get_budgetLedger(logs,form,user = None, budgeter_ID = None,balance = 0.00, percentage = None, diff = None):
+    format_action_type(logs)
     if not logs:
         flash('Start your Saving journey here!')
         if not budgeter_ID:
@@ -217,7 +228,7 @@ def get_budgetLedger(logs,form,user = None, budgeter_ID = None):
             #this needs to redirect to an action, not an html file
             return redirect(url_for('budgetAction', id =  budgeter_ID, users = user))
     else:
-        return render_template ('budgetSummary.html',title ='My_Savings_journey', logs = logs ,form = form,budgeter_ID=budgeter_ID, users =user)
+        return render_template ('budgetSummary.html',title ='My_Savings_journey', logs = logs ,form = form,budgeter_ID=budgeter_ID, users =user, balance = balance,percentage =percentage, diff=diff)
 
 def create_budgetlog (user):
     #newlog = Ledger(Username = user)
@@ -246,8 +257,8 @@ def budgetAction(id):
     if  request.method == 'POST':
         if form.validate_on_submit():
             flash('One step closer to your target' 'success')
-            new_event_id = add_budgetActivity_to_Ledger(id,form)
-            logs = read_budgetLedger(request_user)
+            #new_event_id = add_budgetActivity_to_Ledger(id,form)
+            #logs = actionType(request_user)
             return redirect(url_for('budgetSummary', users=request_user))
         else:
             return render_template ('budgetAction.html', title = 'Add_to_your_Savings', form = form, budgeter_ID = id, users = request_user)
@@ -255,7 +266,38 @@ def budgetAction(id):
     if request.method == 'GET':
             return render_template ('budgetAction.html', title = 'Add_to_your_Savings', form = form, budgeter_ID = id, users = request_user)
 
+def format_action_type(logs, user=None):
+    action_id_converter = {
+        1: 'Deposit',
+        2: 'Withdrawal'
+    }
+    for log in logs:
+        action = action_id_converter.get(log.Action_ID, 'Action Type not found')
+        log.Action_ID = action
+    return logs
 
+def balance_calculator(logs):
+    action_operator_converter = {
+        1: add,
+        2: sub,
+        'Deposit': add,
+        'Withdrawal': sub
+    }
+    balance = 0.00
+    for log in logs:
+        amount = log.Value_in_GBP
+        balance = action_operator_converter[log.Action_ID](balance, amount)    
+    return balance
+
+
+def performance_calculator(list_todoItms, logs):
+    total_costs=0.00
+    for item in list_todoItms:
+        total_costs += item.Costs
+    balance = balance_calculator(logs)
+    diff = balance - total_costs
+    percentage = (balance/total_costs)*100 if total_costs> 0 else 0
+    return diff, percentage
 
 
 if __name__ == '__main__':

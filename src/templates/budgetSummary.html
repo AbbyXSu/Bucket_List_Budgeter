@@ -6,7 +6,7 @@
       <tr>
         <th>Budgeter Id</th>
         <th>Action type</th>
-        <th>Value</th>
+        <th>Value(£)</th>
         <th>Action Date</th>
       </tr>
     </thead>
@@ -21,6 +21,13 @@
       {% endfor %}
     </tbody>
   </table>
+  <h6>Your current savings balance: £{{ balance }}</h6>
+  <h6>{% if diff >=0 %}
+    Fantastic, you have overachieved your target by £{{diff}}!  Your progress to Target: {{ percentage }}%
+    {% else %}
+    Amazing! you are £{{diff}} away from achieving your Target! Your progress to Target: {{ percentage }}%
+    {% endif %}
+    </h6>
 </div>
 {% endblock content %}
 {% block row2 %}
