@@ -8,7 +8,7 @@ from sqlalchemy.orm import query,sessionmaker
 from werkzeug.utils import html
 from .user import RegistrationForm, LoginForm, TodoItemForm,TodoListForm,LedgerForm
 import sqlalchemy.exc as dberr
-from .conn import TodoList, db, app, Base, Users, TodoItem,Ledger,BudgetSummary,ActionLogType
+from .conn import TodoList, db, app, Base, Users, TodoItem,Ledger,BudgetSummary
 
 
 @app.route("/")
@@ -184,43 +184,76 @@ def add_todoItem_to_list(listId, form = None):
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
-# @app.route('/budgetSummary', methods = ['GET','POST'])
-# def BudgetSummary():
-#     request_user = request.args.get('users') if request.args else None
-#     if not request_user:
-#         flash('You do not have an account yet!, Create one!')
-#         return redirect(url_for('home'))
-#     form = LedgerForm()
-#     summary,budgeter_ID = read_budgetSummary (request_user)
+@app.route('/budgetSummary', methods = ['GET','POST'])
+def budgetSummary():
+    request_user = request.args.get('users') if request.args else None
+    if not request_user:
+        flash('You do not have an account yet!, Create one!')
+        return redirect(url_for('home'))
+    form = LedgerForm(request.form)
+    logs,budgeter_ID = read_budgetLedger (request_user)
 
-#     if request.method == 'GET':
-#         return get_budgetSummary(summary, form, user = request_user, budgeter_ID = budgeter_ID)
+    if request.method == 'GET':
+        return get_budgetLedger(logs, form, user = request_user, budgeter_ID = budgeter_ID)
 
-#     if request.method =='POST':
-#         pass
+    if request.method =='POST':
+        budgeter_ID = create_budgetlog(request_user)
+        event_id = add_budgetActivity_to_Ledger (budgeter_ID,form)
+        return render_template ('budgetSummary.html', title ='My_Saving Journey', logs=logs, budgeter_ID =str( budgeter_ID), users = request_user)
 
 
-# def read_budgetSummary(user=None):
-#     summary = db.session.query(BudgetSummary).filter(BudgetSummary.Username == user).all()
-#     balanceflow= summary[0].Ledger_collection if summary and len(summary)>0 else []
-#     budgeter_ID = summary[0].Budgeter_id if summary !=[] else None
-#     return balanceflow, budgeter_ID
+def read_budgetLedger(user=None):
+    logs = db.session.query(BudgetSummary).filter(BudgetSummary.Username == user).all()
+    cashflow= list(logs[0].ledger_collection if logs and len(logs)>0 else [])
+    budgeter_ID = logs[0].Budgeter_Id if logs !=[] else None
+    return cashflow, budgeter_ID
     
-# def get_budgetSummary(summary,form,user = None, budgeter_ID = None):
-#     if not summary:
-#         flash('Start your Saving journey here!')
-#         if not budgeter_ID:
-#             return render_template ('budgetAction.html', title ='Create_saving_Action', users = user, form = form)
-#         else:
-#             return render_template ('budgetAction.html', title ='BudgetSummary', summary=summary, budgeter_ID = str( budgeter_ID),users = user, form = form)
-#     else:
-#         return render_template ('budgetSummary.html',title ='My_budget_summary', summary =summary,form = form,budgeter_ID=budgeter_ID, users =user)
+def get_budgetLedger(logs,form,user = None, budgeter_ID = None):
+    if not logs:
+        flash('Start your Saving journey here!')
+        if not budgeter_ID:
+            return render_template ('budgetAction.html', title ='Create_saving_Action', users = user, form = form)
+        else:
+            #this needs to redirect to an action, not an html file
+            return redirect(url_for('budgetAction', id =  budgeter_ID, users = user))
+    else:
+        return render_template ('budgetSummary.html',title ='My_Savings_journey', logs = logs ,form = form,budgeter_ID=budgeter_ID, users =user)
 
-# @app.route ('/budgetAction', methods =['GET','POST'])
-# def budgetAction():
-#     pass
+def create_budgetlog (user):
+    #newlog = Ledger(Username = user)
+    newlog = BudgetSummary(Username = user)
+    db.session.add(newlog)
+    db.session.commit()
+    return newlog.Budgeter_Id
+
+def add_budgetActivity_to_Ledger(budgeter_ID,form = None):
+    if form:
+        newActivity= Ledger(Value_in_GBP = form.Value_in_GBP.data, Budgeter_ID = budgeter_ID, Action_ID = form.Action_log.data)
+        db.session.add(newActivity)
+        db.session.commit()
+        return newActivity.event_id
+    return None
 
 
+
+@app.route ('/budgetSummary/<id>/item', methods =['GET','POST'])
+def budgetAction(id):
+    form = LedgerForm(request.form)
+    request_user = request.args.get('users') if request.args else None
+    if not request_user:
+        flash('You do not have an account yet!, Create one!')
+        return redirect(url_for('home'))
+    if  request.method == 'POST':
+        if form.validate_on_submit():
+            flash('One step closer to your target' 'success')
+            new_event_id = add_budgetActivity_to_Ledger(id,form)
+            logs = read_budgetLedger(request_user)
+            return redirect(url_for('budgetSummary', users=request_user))
+        else:
+            return render_template ('budgetAction.html', title = 'Add_to_your_Savings', form = form, budgeter_ID = id, users = request_user)
+        
+    if request.method == 'GET':
+            return render_template ('budgetAction.html', title = 'Add_to_your_Savings', form = form, budgeter_ID = id, users = request_user)
 
 
 

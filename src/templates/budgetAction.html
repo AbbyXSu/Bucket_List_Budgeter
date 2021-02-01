@@ -4,7 +4,7 @@
             {% if not budgeter_ID or budgeter_ID == '' %}
             <form method="POST" action="{{''}}">
             {% else %}
-            <form method="POST" action="{{url_for('create_bucket_item', id=budgeter_ID, users=users)}}">
+            <form method="POST" action="{{url_for('budgetAction', id=budgeter_ID, users=users)}}">
             {% endif %}
                 {{ form.hidden_tag() }}
                 <fieldset class="form-group">

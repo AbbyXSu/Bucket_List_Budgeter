@@ -18,7 +18,6 @@ TodoItem = Base.classes.TodoItem
 Ledger = Base.classes.Ledger
 TodoList = Base.classes.TodoList
 BudgetSummary = Base.classes.BudgetSummary
-ActionLogType = Base.classes.ActionLogType
 
 
 if __name__ == '__main__':

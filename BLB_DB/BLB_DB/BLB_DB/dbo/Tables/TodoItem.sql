@@ -3,7 +3,7 @@
     [Id] INT PRIMARY KEY IDENTITY(1,1),
 	[Todo_items_Order] INT NOT NULL, 
     [Todo_List_ID] INT NOT NULL, 
-    [Description] VARCHAR(50) NOT NULL, 
+    [Description] VARCHAR(100) NOT NULL, 
     [Costs] INT NOT NULL, 
     [created_on] DATE NULL DEFAULT GETDATE(),
     [updated_on] DATE NULL DEFAULT GETDATE(),

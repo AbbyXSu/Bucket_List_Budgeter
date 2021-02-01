@@ -1,32 +1,32 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="container">
-<div class="table-responsive">          
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Budgeter Id</th>
-          <th>Balance</th>
-          <th>LastUpdate</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for item in summary %}
-        <tr>
-          <td>item.Budgeter_Id </td>
-          <td>item.Balance</td>
-          <td>item.Last_Update</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    </div>
-  </div>
-  <div class="border-top pt-3">
-    <small class="text-muted">
-        Create An Item? <a class="ml-2" href="{{ url_for('butgetAction', id=bucketList_id, users=users) }}">Click Here</a>
-    </small>
+<div class="content-section">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Budgeter Id</th>
+        <th>Action type</th>
+        <th>Value</th>
+        <th>Action Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in logs %}
+      <tr>
+        <td>{{item.Budgeter_ID}}</td>
+        <td>{{item.Action_ID}}</td>
+        <td>{{item.Value_in_GBP}}</td>
+        <td>{{item.Action_date}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
-  </body>
-  </html>
-  {% endblock content %}
+{% endblock content %}
+{% block row2 %}
+<div class="border-top pt-3">
+  <small class="text-muted">
+    Add to Savings? <a class="ml-2" href="{{ url_for('budgetAction', id=budgeter_ID, users=users) }}">Click Here</a>
+  </small>
+</div>
+{% endblock row2 %}
