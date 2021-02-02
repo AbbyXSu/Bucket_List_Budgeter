@@ -200,7 +200,7 @@ def budgetSummary():
     logs,budgeter_ID = read_budgetLedger (request_user)
     balance =balance_calculator(logs)
     list_todoItms, _ =read_bucket_list (request_user)
-    diff, percentage =performance_calculator(list_todoItms, logs)
+    diff, percentage, _ =performance_calculator(list_todoItms, logs)
     if request.method == 'GET':
         return get_budgetLedger(logs, form, user = request_user, budgeter_ID = budgeter_ID,balance = balance, percentage =round(percentage,2), diff=diff)
 
@@ -257,14 +257,23 @@ def budgetAction(id):
     if  request.method == 'POST':
         if form.validate_on_submit():
             flash('One step closer to your target' 'success')
-            #new_event_id = add_budgetActivity_to_Ledger(id,form)
-            #logs = actionType(request_user)
-            return redirect(url_for('budgetSummary', users=request_user))
+            logs, _ = read_budgetLedger (request_user)
+            balance = balance_calculator(logs)
+            update_balance(id, balance)
+
+            return redirect(url_for('budgetSummary', users=request_user), balance = balance)
         else:
             return render_template ('budgetAction.html', title = 'Add_to_your_Savings', form = form, budgeter_ID = id, users = request_user)
         
     if request.method == 'GET':
             return render_template ('budgetAction.html', title = 'Add_to_your_Savings', form = form, budgeter_ID = id, users = request_user)
+
+
+def update_balance(id, balance):
+    to_update = db.session.query(BudgetSummary).filter_by(Budgeter_Id = id).first()
+    to_update.Balance = balance
+    db.session.commit()
+
 
 def format_action_type(logs, user=None):
     action_id_converter = {
@@ -297,7 +306,24 @@ def performance_calculator(list_todoItms, logs):
     balance = balance_calculator(logs)
     diff = balance - total_costs
     percentage = (balance/total_costs)*100 if total_costs> 0 else 0
-    return diff, percentage
+    return diff, percentage,total_costs
+
+
+@app.route('/myAccount')
+def my_account():
+    request_user = request.args.get('users') if request and request.args else None
+    list_todoItms, _ =read_bucket_list (request_user)
+    logs, _ = read_budgetLedger(request_user)
+    numberofBucketItems = number_of_bucketItems(request_user)
+    balance = balance_calculator (logs)
+    diff, percentage, total_costs = performance_calculator (list_todoItms, logs)
+    return render_template ('myAccount.html', users= request_user, balance = balance, diff = diff, percentage = round(percentage,2), numberofBucketItems = numberofBucketItems,total_costs = total_costs,logs = logs)
+
+
+def number_of_bucketItems(request_user):
+    _ , todoListId =read_bucket_list (request_user)
+    numberofBucketItems = db.session.query(TodoItem).filter_by(Todo_List_ID=todoListId).count()
+    return numberofBucketItems
 
 
 if __name__ == '__main__':

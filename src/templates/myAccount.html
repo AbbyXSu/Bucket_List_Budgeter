@@ -1,0 +1,20 @@
+
+{% extends "layout.html" %}
+{% block content %}
+<div>
+    <h3> Welcome to the account page, here is your Summary:
+    </h3>
+    <h6> * </h6>
+    <h6> Your currently has {{numberofBucketItems}} Items in your bucket List </h6>
+    <h6> * </h6>
+    <h6> The total costs of all your bucket items is £ {{total_costs}} </h6>
+    <h6> * </h6>
+    <h6>Well done ! Your savings is currently at £ {{balance}} </h6>
+    <h6> * </h6>
+    <h6>You have a cost-budget gap of £ {{diff}}, but you are getting there ! </h6>
+    <h6> * </h6>
+    <h6>Your are {{percentage}} % away from your target ! Nice work!</h6>
+
+</div>
+
+{% endblock %}

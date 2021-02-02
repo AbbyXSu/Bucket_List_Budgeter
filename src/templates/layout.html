@@ -48,7 +48,7 @@
               <ul class="list-group">
                 <li class="list-group-item list-group-item-light"><a class="ml-2" href="{{ url_for('bucketList', users= request.args.get('users')) }}">My Bucket List</li>
                 <li class="list-group-item list-group-item-light"><a class="ml-2" href="{{ url_for('budgetSummary',users= request.args.get('users')) }}">My Saving Journey</li>
-                <li class="list-group-item list-group-item-light"><a class="ml-2" href="{{ url_for('home', users= request.args.get('users')) }}">My Account</li>
+                <li class="list-group-item list-group-item-light"><a class="ml-2" href="{{ url_for('my_account', users= request.args.get('users')) }}">My Account</li>
               </ul>
             </p>
           </div>
