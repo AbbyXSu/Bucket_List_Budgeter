@@ -38,11 +38,7 @@ body {
   
 @import url('https://fonts.googleapis.com/css?family=Montserrat|Open+Sans|Roboto');
   table{
-    position: absolute;
-    z-index: 2;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%,-50%);
+    position: static;
     width: 60%; 
     border-collapse: collapse;
     border-spacing: 0;

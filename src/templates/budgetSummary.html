@@ -1,6 +1,13 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="content-section">
+  <h6>Your current savings balance: £{{ balance }}</h6>
+  <h6>{% if diff >=0 %}
+    Fantastic, you have overachieved your target by £{{diff}}!  Your progress to Target: {{ percentage }}%
+    {% else %}
+    Amazing! you are £{{diff}} away from achieving your Target! Your progress to Target: {{ percentage }}%
+    {% endif %}
+    </h6>
   <table class="table">
     <thead>
       <tr>
@@ -21,13 +28,6 @@
       {% endfor %}
     </tbody>
   </table>
-  <h6>Your current savings balance: £{{ balance }}</h6>
-  <h6>{% if diff >=0 %}
-    Fantastic, you have overachieved your target by £{{diff}}!  Your progress to Target: {{ percentage }}%
-    {% else %}
-    Amazing! you are £{{diff}} away from achieving your Target! Your progress to Target: {{ percentage }}%
-    {% endif %}
-    </h6>
 </div>
 {% endblock content %}
 {% block row2 %}

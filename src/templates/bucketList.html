@@ -1,8 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="content-section">
-    <!-- <div class="grid-container"> -->
-        <!-- <div class="grid-item"> -->
             <table class="table">
                 <thead>
                     <tr>
@@ -40,16 +38,12 @@
                     {% endfor %}
                 </tbody>
             </table>
-        <!-- </div> -->
-    <!-- </div> -->
 </div>
 {% endblock content %}
 {% block row2 %}
-<!-- <div class="grid-item"> -->
     <div class="border-top pt-3">
         <small class="text-muted">
             Create An Item? <a class="ml-2" href="{{ url_for('create_bucket_item', id=bucketList_id, users=users) }}">Click Here</a>
         </small>
     </div>
-<!-- </div> -->
 {% endblock row2 %}
