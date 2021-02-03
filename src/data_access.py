@@ -38,12 +38,6 @@ def validate_login(form):
         return result
 
 
-def get_user(request):
-    current_user = request.args.get(
-        'users') if request and request.args else None
-    return current_user
-
-
 def update_item(id, itemId, form):
     chosenItem = chosen_item(id, itemId,)
     chosenItem.Todo_items_Order = form.Item_priority.data
@@ -154,6 +148,13 @@ def number_of_bucketItems(request_user):
     numberofBucketItems = db.session.query(
         TodoItem).filter_by(Todo_List_ID=todoListId).count()
     return numberofBucketItems
+
+def update_numberOfItem(id,numberofBucketItems):
+    to_update = db.session.query(
+        TodoList).filter_by(Todo_List_ID=id).first()
+    to_update.Number_of_items = numberofBucketItems
+    db.session.commit()
+
 
 
 if __name__ == '__main__':

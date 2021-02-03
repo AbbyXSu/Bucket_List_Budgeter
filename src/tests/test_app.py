@@ -1,9 +1,11 @@
 from operator import add
 from typing import AsyncContextManager
 from src.app import add_budgetActivity_to_Ledger, balance_calculator, format_action_type, performance_calculator
-#from Flask_testing import TestCase
 from flask import url_for
-from ..data_access import TodoList, db, app, Base, Users, TodoItem, Ledger, BudgetSummary
+from ..data_access import TodoList, db, app, Base, Users, TodoItem, Ledger, BudgetSummary, get_user
+from _pytest import monkeypatch
+import pytest
+from unittest.mock import patch, MagicMock
 
 
 def test_format_action_type_Deposit():
@@ -122,6 +124,14 @@ def test_performance_calculator_single_todoitem_minus():
     assert actal_total_costs == expected_total_costs
 
 # 3 Steps of testing via pytest
-# Arrange
+# Arrange ( via monkey patch)
 # Act (call the method under test)
 # Assert - assert the result is what we expected
+
+
+def test_home_with_username():
+    
+    pass
+
+def test_home_with_none_username():
+    pass

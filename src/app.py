@@ -13,6 +13,10 @@ from .data_access import *
 
 
 #---------------------------------------------------------homepage/login/register----------------------------------------------------------------------------------------#
+def get_user(request):
+    current_user = request.args.get(
+        'users') if request and request.args else None
+    return current_user
 
 
 @app.route("/")
@@ -85,6 +89,8 @@ def create_bucket_item(id):
                 f'Item created for {form.Title.data}! in the Bucket List', 'success')
             new_item_id = add_todoItem_to_list(id, form)
             posts = read_bucket_list(request_user)
+            numberofBucketItems = number_of_bucketItems(request_user)
+            update_numberOfItem(id, numberofBucketItems)
             return redirect(url_for('bucketList', users=request_user))
         else:
             return render_template('createItem.html', title='My_Bucket_List', form=form, bucketList_id=str(id), users=request_user)
@@ -110,9 +116,9 @@ def bucket_list_item(id, itemId):
 def delete_bucket_list_item(id, itemId):
     deleting_item(id, itemId)
     user = get_user_with_TodoListID(id)
+    numberofBucketItems = number_of_bucketItems(user)
+    update_numberOfItem(id, numberofBucketItems)
     return redirect(url_for('bucketList', id=id, itemId=itemId, users=user))
-
-
 
 
 #------------------------------------------------------------Bucket_List-------------------------------------------------------------------------------------#
@@ -153,8 +159,6 @@ def budgetSummary():
         add_budgetActivity_to_Ledger(budgeter_ID, form)
         logs, _ = read_budgetLedger(request_user)
         return render_template('budgetSummary.html', title='My_Saving Journey', logs=logs, budgeter_ID=str(budgeter_ID), balance = balance, users=request_user, diff = diff, percentage=round(percentage, 2))
-
-
 
 
 
