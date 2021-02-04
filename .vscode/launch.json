@@ -5,6 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "PyTest",
+            "type": "python",
+            "request": "launch",
+            "stopOnEntry": false,
+            "module": "pytest",
+            "args": [
+                "-sv"
+            ],
+            "cwd": "${workspaceRoot}",            
+            "env": {
+                "FLASK_APP": "./src/app.py",
+                "FLASK_ENV": "development",
+                "FLASK_DEBUG": "0"
+            },
+        },
+        {
             "name": "Python: Flask",
             "type": "python",
             "request": "launch",

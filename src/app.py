@@ -15,20 +15,25 @@ from .data_access import *
 #---------------------------------------------------------homepage/login/register----------------------------------------------------------------------------------------#
 def get_user(request):
     current_user = request.args.get(
-        'users') if request and request.args else None
-    return current_user
+        'users') \
+            if request and request.args\
+            else ''
+    return current_user if len(current_user) > 0 else None
 
 
 @app.route("/")
 @app.route('/home')
 def home():
+    """
+    Application home page
+    """
     current_user = get_user(request)
     return render_template('home.html', users=current_user, first_name=request.args.get('first_name'))
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    form = RegistrationForm()
+    form = RegistrationForm(request.form)
     if not form.validate_on_submit():
         return render_template('register.html', title='Register', form=form)
     try:
