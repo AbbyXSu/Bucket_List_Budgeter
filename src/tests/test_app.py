@@ -2,13 +2,15 @@ from operator import add
 from typing import AsyncContextManager
 
 from flask.testing import FlaskClient
-from src.app import add_budgetActivity_to_Ledger, balance_calculator, format_action_type, performance_calculator, get_user
+from flask.wrappers import Response
+from src.app import *
 from flask import url_for
 from ..data_access import TodoList, db, app, Base, Users, TodoItem, Ledger, BudgetSummary
 from _pytest import monkeypatch
 import pytest
 from unittest.mock import patch, MagicMock
 from .configure_test_app import *
+from ..user import  *
 
 
 def test_format_action_type_Deposit():
@@ -126,11 +128,6 @@ def test_performance_calculator_single_todoitem_minus():
     assert actual_percentage == excepted_percenatge
     assert actal_total_costs == expected_total_costs
 
-# 3 Steps of testing via pytest
-# Arrange ( via monkey patch)
-# Act (call the method under test)
-# Assert - assert the result is what we expected
-
 
 def test_home_with_username(test_client: FlaskClient):
     response = test_client.get("/home?users=TestUsername&first_name='Luke'")
@@ -214,7 +211,6 @@ def test_login_get_methods(test_client: FlaskClient):
 
 @pytest.fixture()
 def db_data_setup():
-    #insert / update data needed for tests
     student = Users(Username='sniffy13145', first_name='slavoj', last_name ='zizek' )
     db.session.add(student)
     db.session.commit()
@@ -222,7 +218,6 @@ def db_data_setup():
     test_todo_list = TodoList(Username=student.Username, Number_of_items = 3 )
     db.session.add(test_todo_list)
     db.session.commit()
-
     test_todo_item_1 = TodoItem(Todo_List_ID = test_todo_list.Todo_List_ID, Todo_items_Order = 1, Description ='fun', Costs = 3, Title = 'pancake')
     test_todo_item_2 = TodoItem(Todo_List_ID = test_todo_list.Todo_List_ID, Todo_items_Order = 2, Description ='debate', Costs = 4, Title = 'china')
     test_todo_item_3 = TodoItem(Todo_List_ID = test_todo_list.Todo_List_ID, Todo_items_Order = 3, Description ='endtime', Costs = 5, Title = 'living')
@@ -240,7 +235,7 @@ def db_data_setup():
     db.session.commit()
     db.session.flush()
 
-    yield
+    yield student, test_todo_list, test_todo_item_1, test_todo_item_2,test_todo_item_3, test_budgetSummary, test_ledger
     #remove / reset the data
     db.session.delete(test_ledger)
     db.session.commit()
@@ -286,9 +281,138 @@ def test_bucketList_get_action(test_client: FlaskClient, db_data_setup):
     assert 'Delete' in response.data.decode("utf-8") 
     assert 'Update' in response.data.decode("utf-8")
 
-# def test_create_bucket_item_exiting_users(test_client: FlaskClient, db_data_setup):
-#     response = test_client.get("bucketList?users=sniffy13145")
-#     assert response.status_code == 200
-#     assert 'Delete' in response.data.decode("utf-8") 
-#     assert 'Update' in response.data.decode("utf-8")
+def test_get_bucket_list_item(test_client: FlaskClient, db_data_setup):
+    student, test_todo_list, test_todo_item_1, test_todo_item_2,test_todo_item_3, test_budgetSummary, test_ledger = db_data_setup
+    response = test_client.get(f"bucketList/{test_todo_list.Todo_List_ID}/item/{test_todo_item_1.Id}?users=sniffy13145")
+    assert response.status_code == 200
+    assert 'fun' in response.data.decode("utf-8") 
+    assert 'pancake' in response.data.decode("utf-8")
 
+def test_get_bucket_list_item_data(test_client: FlaskClient, db_data_setup):
+    student, test_todo_list, test_todo_item_1, test_todo_item_2,test_todo_item_3, test_budgetSummary, test_ledger = db_data_setup
+    response = test_client.get(f"bucketList/{test_todo_list.Todo_List_ID}/item/{test_todo_item_1.Id}?users=sniffy13145")
+    assert response.status_code == 200
+    assert '1' in response.data.decode("utf-8") 
+    assert '3' in response.data.decode("utf-8")
+
+def test_delete_bucket_list_item_items(test_client: FlaskClient, db_data_setup):
+    student, test_todo_list, test_todo_item_1, test_todo_item_2,test_todo_item_3, test_budgetSummary, test_ledger = db_data_setup
+    response = test_client.get(f"bucketList/{test_todo_list.Todo_List_ID}/item/{test_todo_item_3.Id}/delete?users=sniffy13145", follow_redirects=True)
+    assert response.status_code == 200
+    assert 'endtime' not in response.data.decode("utf-8") 
+    assert 'living' not in response.data.decode("utf-8")
+
+def test_delete_bucket_list_item_numberpfbucketitems(test_client: FlaskClient, db_data_setup):
+    student, test_todo_list, test_todo_item_1, test_todo_item_2,test_todo_item_3, test_budgetSummary, test_ledger = db_data_setup
+    response = test_client.get(f"bucketList/{test_todo_list.Todo_List_ID}/item/{test_todo_item_3.Id}/delete?users=sniffy13145", follow_redirects=True)
+    assert response.status_code == 200
+    assert '2' in response.data.decode("utf-8") 
+    assert '1' in response.data.decode("utf-8")
+
+def test_get_bucket_list(test_client: FlaskClient, db_data_setup):
+    student, test_todo_list, test_todo_item_1, test_todo_item_2,test_todo_item_3, test_budgetSummary, test_ledger = db_data_setup
+    response = test_client.get(f"bucketList/{test_todo_list.Todo_List_ID}/item/{test_todo_item_3.Id}/delete?users=sniffy13145", follow_redirects=True)
+    assert response.status_code == 200
+    assert 'create' not in response.data.decode("utf-8") 
+    assert 'Bucket_List' in response.data.decode("utf-8")
+
+def test_budgetSummary_balance(test_client: FlaskClient, db_data_setup):
+    response = test_client.get("/budgetSummary?users=sniffy13145")
+    assert response.status_code == 200
+    assert '9' in response.data.decode("utf-8") 
+    assert 'balance' in response.data.decode("utf-8")
+
+def test_budgetSummary_Action_ID(test_client: FlaskClient, db_data_setup):
+    response = test_client.get("/budgetSummary?users=sniffy13145")
+    assert response.status_code == 200
+    assert 'Deposit' in response.data.decode("utf-8") 
+    assert '1' in response.data.decode("utf-8")
+
+def test_budgetSummary_Budgeter_Id(test_client: FlaskClient, db_data_setup):
+    student, test_todo_list, test_todo_item_1, test_todo_item_2,test_todo_item_3, test_budgetSummary, test_ledger = db_data_setup
+    response = test_client.get("/budgetSummary?users=sniffy13145")
+    assert response.status_code == 200
+    assert str(test_budgetSummary.Budgeter_Id) in response.data.decode("utf-8") 
+
+def test_get_budgetLedger(test_client: FlaskClient, db_data_setup):
+    response = test_client.get("/budgetSummary?users=sniffy13145")
+    assert response.status_code == 200
+    assert 'budgetSummary' in response.data.decode("utf-8") 
+    assert 'budgetAction' not in response.data.decode("utf-8")
+
+def test_get_budgetLedger_title(test_client: FlaskClient, db_data_setup):
+    response = test_client.get("/budgetSummary?users=sniffy13145")
+    assert response.status_code == 200
+    assert 'My_Savings_journey' in response.data.decode("utf-8") 
+    assert 'Create_saving_Action' not in response.data.decode("utf-8")
+
+def test_budgetSummary_Budgeter_Id(test_client: FlaskClient, db_data_setup):
+    student, test_todo_list, test_todo_item_1, test_todo_item_2,test_todo_item_3, test_budgetSummary, test_ledger = db_data_setup
+    response = test_client.get(f"budgetSummary/{test_budgetSummary.Budgeter_Id}/item",follow_redirects=True)
+    assert response.status_code == 200
+    assert 'budgetSummary' in response.data.decode("utf-8") 
+    assert 'Add_to_your_Savings' not in response.data.decode("utf-8") 
+
+def test_budgetSummary_Budgeter_Id(test_client: FlaskClient, db_data_setup):
+    student, test_todo_list, test_todo_item_1, test_todo_item_2,test_todo_item_3, test_budgetSummary, test_ledger = db_data_setup
+    response = test_client.get(f"budgetSummary/{test_budgetSummary.Budgeter_Id}/item",follow_redirects=True)
+    assert response.status_code == 200
+    assert '9' in response.data.decode("utf-8") 
+    assert str(test_budgetSummary.Budgeter_Id) not in response.data.decode("utf-8") 
+
+def test_my_account_diff(test_client: FlaskClient, db_data_setup):
+    student, test_todo_list, test_todo_item_1, test_todo_item_2,test_todo_item_3, test_budgetSummary, test_ledger = db_data_setup
+    response = test_client.get('/myAccount?users=sniffy13145')
+    assert response.status_code == 200
+    assert 'myAccount' in response.data.decode("utf-8") 
+    assert '9'in response.data.decode("utf-8") 
+
+
+def test_get_budgetLedger_none(test_client: FlaskClient, db_data_setup):
+    response = get_budgetLedger(logs=None,form =  LedgerForm() )
+    assert 'Action' in response
+    assert 'Value/GBP' in response 
+
+def test_get_budgetLedger_none_with_not_budget_ID(test_client: FlaskClient, db_data_setup):
+    response = get_budgetLedger(logs=None,form =  LedgerForm(),  budgeter_ID =None)
+    assert 'Action' in response
+    assert 'id' in response 
+
+def test_bucketList_None(test_client: FlaskClient, db_data_setup):
+    response = test_client.get("bucketList",follow_redirects=True)
+    assert response.status_code == 200
+    assert 'there' in response.data.decode("utf-8") 
+    assert 'Hello' in response.data.decode("utf-8")
+
+def test_create_bucke_item_None(test_client: FlaskClient, db_data_setup):
+    student, test_todo_list, test_todo_item_1, test_todo_item_2,test_todo_item_3, test_budgetSummary, test_ledger = db_data_setup
+    response = test_client.get(f"bucketList/{test_todo_list.Todo_List_ID}/item", follow_redirects=True)
+    assert response.status_code == 200
+    assert 'there' in response.data.decode("utf-8") 
+    assert 'Hello' in response.data.decode("utf-8") 
+
+def test_budgetsummary_None(test_client: FlaskClient, db_data_setup):
+    student, test_todo_list, test_todo_item_1, test_todo_item_2,test_todo_item_3, test_budgetSummary, test_ledger = db_data_setup
+    response = test_client.get("budgetSummary", follow_redirects=True)
+    assert response.status_code == 200
+    assert 'there' in response.data.decode("utf-8") 
+    assert 'Hello' in response.data.decode("utf-8") 
+
+
+def test_get_bucket_list_noneposts_noid(test_client: FlaskClient, db_data_setup):
+    response = get_bucket_list(posts=None, list_id =None, form=TodoItemForm())
+    assert 'Create_My_Bucket_Item' in response
+    assert 'Preference' in response 
+
+def test_get_bucket_list_noneposts(test_client: FlaskClient, db_data_setup):
+    student, test_todo_list, test_todo_item_1, test_todo_item_2,test_todo_item_3, test_budgetSummary, test_ledger = db_data_setup
+    response = get_bucket_list(posts=None, form=TodoItemForm(), list_id = test_todo_list.Todo_List_ID)
+    assert 'Redirecting' in response.data.decode("utf-8") 
+
+def test_budgetAction_get_withuser(test_client: FlaskClient, db_data_setup):
+    student, test_todo_list, test_todo_item_1, test_todo_item_2,test_todo_item_3, test_budgetSummary, test_ledger = db_data_setup
+    response = test_client.get(f"budgetSummary/{test_budgetSummary.Budgeter_Id}/item?users=sniffy13145")
+    assert response.status_code == 200
+    assert 'Add_to_your_Savings' in response.data.decode("utf-8") 
+    assert 'Action' in response.data.decode("utf-8") 
+    

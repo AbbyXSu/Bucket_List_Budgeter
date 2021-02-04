@@ -204,6 +204,8 @@ def budgetAction(id):
 
 
 def format_action_type(logs, user=None):  # pytest done
+    if not logs:
+        return
     action_id_converter = {
         1: 'Deposit',
         2: 'Withdrawal'
