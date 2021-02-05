@@ -163,6 +163,7 @@ def budgetSummary():
         balance = balance_calculator(logs)
         add_budgetActivity_to_Ledger(budgeter_ID, form)
         logs, _ = read_budgetLedger(request_user)
+        format_action_type(logs)
         return render_template('budgetSummary.html', title='My_Saving Journey', logs=logs, budgeter_ID=str(budgeter_ID), balance = balance, users=request_user, diff = diff, percentage=round(percentage, 2))
 
 

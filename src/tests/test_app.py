@@ -476,30 +476,3 @@ def test_register_post_register(test_client: FlaskClient, prepare_test_register_
     assert name in response.data.decode('utf-8')
 
 
-# @pytest.fixture()
-# def prepare_test_register_post_register_conflict():
-#     user='ThebigOther1314'
-#     name='slavoj'
-#     last_name='zizek'
-#     input_form=dict(username=user, 
-#                     first_name=name,
-#                     last_name=last_name,
-#                     Submit='Sign Up')
-#     to_cause_conflict = Users(Username=user, first_name=name, last_name=last_name)
-#     db.session.add(to_cause_conflict)
-#     db.session.commit()
-#     yield input_form, name
-#     db.session.delete(to_cause_conflict)
-#     db.session.commit()
-
-# def test_register_post_register_conflict(test_client: FlaskClient, prepare_test_register_post_register_conflict):        
-#     my_form, name = prepare_test_register_post_register_conflict
-    
-#     response = test_client.post(url_for('register'), 
-#                             data=my_form,
-#                             content_type='application/x-www-form-urlencoded',
-#                             follow_redirects=True)
-
-#     assert response.status_code == 200
-#     assert name not in response.data.decode('utf-8')
-#     assert 'Account has already been created' in response.data.decode('utf-8')
