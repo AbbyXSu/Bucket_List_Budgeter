@@ -6,8 +6,10 @@ from sqlalchemy import create_engine, engine
 
 
 app = Flask(__name__)
+#read these from environment variables
 app.config['SECRET_KEY'] = '88dd6a6854b7f1901b7f01d353186c6a'
-app.config['SQLALCHEMY_DATABASE_URI'] = "mssql+pyodbc://BLBAPP:abby@DESKTOP-4K1BGVB/BLB_DB?driver=SQL+Server"
+#app.config['SQLALCHEMY_DATABASE_URI'] = "mssql+pyodbc://BLBAPP:abby@DESKTOP-4K1BGVB/BLB_DB?driver=SQL+Server"
+app.config['SQLALCHEMY_DATABASE_URI'] = "mssql+pyodbc://BLBAPP:abby@192.168.1.18,1434/BLB_DB?driver=ODBC+Driver+17+for+SQL+Server"
 db = SQLAlchemy(app)
 
 Base = automap_base()

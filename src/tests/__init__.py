@@ -1,0 +1,1 @@
+#os.environ['BLBDB_APP_URI'] if null, set a default

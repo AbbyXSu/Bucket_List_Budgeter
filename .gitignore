@@ -133,4 +133,9 @@ dmypy.json
 /BLB_DB/BLB_DB/BLB_DB/BLB_DB.dbmdl
 /BLB_DB/BLB_DB/BLB_DB/BLB_DB.jfm
 /BLB_DB/BLB_DB/BLB_DB/BLB_DB.refactorlog
+/BLB_DB/BLB_DB/BLB_DB/bin/Release
+/BLB_DB/BLB_DB/BLB_DB/obj/Release
 bash.exe.stackdump
+
+.vscode
+*__pycache__
