@@ -1,0 +1,14 @@
+
+{% extends "layout.html" %}
+{% block content %}
+<div>
+    <h3>Hello, {% if first_name %}
+        {{ first_name }}
+        {% else %}
+        {{'there'}}
+        {% endif %}
+    </h3>
+    <h4>Today’s Accomplishments Were Yesterday’s Impossibilities<h4>
+</div>
+
+{% endblock %}

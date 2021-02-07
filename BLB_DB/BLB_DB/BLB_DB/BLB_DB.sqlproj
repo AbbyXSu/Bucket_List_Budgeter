@@ -65,8 +65,8 @@
     <Build Include="dbo\Tables\Users.sql" />
     <Build Include="dbo\Tables\BudgetSummary.sql" />
     <Build Include="dbo\Tables\Ledger.sql" />
-    <Build Include="dbo\Tables\ActionLogType.sql" />
     <Build Include="dbo\Tables\TodoList.sql" />
     <Build Include="dbo\Tables\TodoItem.sql" />
+    <Build Include="Security\BLBAPP.sql" />
   </ItemGroup>
 </Project>

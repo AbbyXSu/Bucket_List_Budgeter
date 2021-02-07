@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="content-section">
+  <h6>Your current savings balance: £{{ balance }}</h6>
+  <h6>{% if diff >=0 %}
+    Fantastic, you have overachieved your target by £{{diff}}!  Your progress to Target: {{ percentage }}%
+    {% else %}
+    Amazing! you are £{{diff}} away from achieving your Target! Your progress to Target: {{ percentage }}%
+    {% endif %}
+    </h6>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Action type</th>
+        <th>Value(£)</th>
+        <th>Action Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in logs %}
+      <tr>
+        <td>{{item.Action_ID}}</td>
+        <td>{{item.Value_in_GBP}}</td>
+        <td>{{item.Action_date}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock content %}
+{% block row2 %}
+<div class="border-top pt-3">
+  <small class="text-muted">
+    Add to Savings? <a class="ml-2" href="{{ url_for('budgetAction', id=budgeter_ID, users=users) }}">Click Here</a>
+  </small>
+</div>
+{% endblock row2 %}

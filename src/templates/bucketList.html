@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="content-section">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Preference</th>
+                        <th>Title</th>
+                        <th>Cost(£)</th>
+                        <th>Description</th>
+                        <th>Delete </th>
+                        <th>Update </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in posts %}
+                    <tr>
+                        <td>
+                            {{ item.Todo_items_Order}}
+                        </td>
+                        <td>
+                            {{ item.Title}}
+                        </td>
+                        <td>
+                            {{ item.Costs}}
+                        </td>
+                        <td>
+                            {{ item.Description}}
+                        </td>
+                        <td>
+                            <a href="{{url_for('delete_bucket_list_item', id=bucketList_id, itemId=item.Id, users=users)}}" value="Delete" class="btn btn-outline-info">Delete</a>
+                        </td>
+                        <td>
+                            <a href="{{url_for('bucket_list_item', id=bucketList_id, itemId=item.Id, users=users)}}" value="Update" class="btn btn-outline-info">Update</a>
+                        </td>
+                        
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+</div>
+{% endblock content %}
+{% block row2 %}
+    <div class="border-top pt-3">
+        <small class="text-muted">
+            Create An Item? <a class="ml-2" href="{{ url_for('create_bucket_item', id=bucketList_id, users=users) }}">Click Here</a>
+        </small>
+    </div>
+{% endblock row2 %}

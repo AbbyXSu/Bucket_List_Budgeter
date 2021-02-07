@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+        <div class="content-section">
+            <form method="POST" action="{{url_for('bucket_list_item', id=id, itemId =itemId)}}">
+                {% from "_formhelpers.html" import render_field %}
+                {{ form.hidden_tag() }}
+                <fieldset class="form-group">
+                    <legend class="border-bottom mb-4">Edit the bucketlist item: </legend>
+                    {{ render_field(form.Item_priority) }}
+                    {{ render_field(form.Title)}}
+                    {{ render_field(form.Description )}}
+                    {{ render_field(form.Costs) }}
+                </fieldset>
+                <div class="form-group">
+                    {{ form.Submit(class="btn btn-outline-info") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
