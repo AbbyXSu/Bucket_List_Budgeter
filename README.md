@@ -4,7 +4,6 @@ Resource:
 
 Link to the Github Project Board: https://github.com/AbbyXSu/Bucket_List_Budgeter/projects/1
 
-Link to Presentation: 
 
 Brief:
 
@@ -99,7 +98,7 @@ The testing method in this project and the constraints of using SQLalchemy along
 
 
 ## Systems Integration and Build
-* AWS RDS Relational Database Service  was used to deploy database 
+* AWS RDS Relational Database Service  was used to deploy SQL server database 
 * Environmental variable was set for the cconnection between RDS and web app
 * Amazon Elastic Compute Cloud was used to host CI server Jenkins and deploy the application 
 * Jenkins is used to achieve Continuous Integration by building an automated project
@@ -109,6 +108,13 @@ The testing method in this project and the constraints of using SQLalchemy along
 * The build was successful as evidenced on github project issue # 7( detailss see https://github.com/AbbyXSu/Bucket_List_Budgeter/issues/7#issuecomment-774941862 )
 
 ## Risk Assessment
+* SQL injection might be a cybersecurity risk factor in operating this web appplication as the database is directly managed under Python ORM tool SQLAlchemy, the solution is to put limited permission to SQLAlchemy using state driven database approach and have seperate database manaagement systerm, however, further security measure are needed for further development and deployment.
+* Http attack and data breach is also possible to happen when the connection of the application become vulnerable when hosting on an VM, the solution is to make sure sensitive information of the users are encryted and stored seperately from the hosting enviorment and give normal users; limited permission to them.Hoewever, it is critial that the users should have the awareness to avoid posting sensitive information on the application.
+* SQL server connection goes down, in the event when SQL server on AWS EDS goes down, the application will become unfunctional. The solution is to create an new RDS connection, or contact the service provider AWS.
+* Web server technical issues or suffers attacks, in which case the the web application will become not funtional, an back up web server/VM might be needed to be created. If issue presists, contacting the service provider AWS.
+* The application is also exposed to a certain degree of security risk as password authentications is provided.
+* Intergration testing and performance testings might be needed to explore the appllication's performance in real life pratice.
+
 
 ## Future Improvements
 * Bucket List can be extended to multiple bucket list per user (To travel List/Todo with friends List etc.)
