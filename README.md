@@ -4,6 +4,8 @@ Resource:
 
 Link to the Github Project Board: https://github.com/AbbyXSu/Bucket_List_Budgeter/projects/1
 
+MVP release milestone : https://github.com/AbbyXSu/Bucket_List_Budgeter/milestones
+
 
 Brief:
 
