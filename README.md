@@ -112,8 +112,8 @@ The testing method in this project and the constraints of using SQLalchemy along
 * Http attack and data breach is also possible to happen when the connection of the application become vulnerable when hosting on an VM, the solution is to make sure sensitive information of the users are encryted and stored seperately from the hosting enviorment and give normal users; limited permission to them.Hoewever, it is critial that the users should have the awareness to avoid posting sensitive information on the application.
 * SQL server connection goes down, in the event when SQL server on AWS EDS goes down, the application will become unfunctional. The solution is to create an new RDS connection, or contact the service provider AWS.
 * Web server technical issues or suffers attacks, in which case the the web application will become not funtional, an back up web server/VM might be needed to be created. If issue presists, contacting the service provider AWS.
-* The application is also exposed to a certain degree of security risk as password authentications is provided.
-* Intergration testing and performance testings might be needed to explore the appllication's performance in real life pratice.
+* The application is also exposed to a certain degree of security risk as password authentications is not provided. future development and enhancement is needed for this security feature.
+* Intergration testing and performance testings might be needed to explore the appllication's performance in real life pratice( Speed, high volume traffic handling etc).
 
 
 ## Future Improvements
