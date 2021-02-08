@@ -105,7 +105,7 @@ The testing method in this project and the constraints of using SQLalchemy along
 * Enviorment variable was built, virtual enviorment was activated for testing the application
 * Application was tested automatically via Jenkins
 * Deploymennt was achieved by exporting, and deploying Python package as artifact to AWS EC2 and the web app become operative and avaliable for further development and deplloyment.
-* The build was successful as evidenced on github project issue # 7( detailss see https://github.com/AbbyXSu/Bucket_List_Budgeter/issues/7#issuecomment-774941862 )
+* The build was successful as evidenced on github project issue # 7( details see https://github.com/AbbyXSu/Bucket_List_Budgeter/issues/7#issuecomment-774941862 )
 
 ## Risk Assessment
 * SQL injection might be a cybersecurity risk factor in operating this web appplication as the database is directly managed under Python ORM tool SQLAlchemy, the solution is to put limited permission to SQLAlchemy using state driven database approach and have seperate database manaagement systerm, however, further security measure are needed for further development and deployment.
