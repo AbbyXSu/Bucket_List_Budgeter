@@ -8,7 +8,7 @@ Link to Presentation:
 
 Brief:
 
-This documentation detailed all the necessary procedures and actions that were taken to complete this functional web application and fulfilled tests to ensure the app is fully utilise. The objective of this project is to create an functional CRUD application in Python, following best practices and design principles and produce the MVP with utilisation of Python, Pytest, SQL server, Git (as Version Control),Flask HTML(as front end),CSS and Jenkins(as CI server)in both Linux and Windows system.
+This documentation detailed all the necessary procedures and actions that were taken to complete this functional web application and fulfilled tests to ensure the app is fully utilise. The objective of this project is to create an functional CRUD application in Python, following best practices and design principles and produce the MVP with utilisation of Python, Pytest, SQL server via AWS RDS, Git (as Version Control),Flask HTML(as front end),CSS and Jenkins(as CI server)in both Linux and Windows system on AWS VM.
 
 Additional specification of the project is as follow:
 
@@ -99,7 +99,14 @@ The testing method in this project and the constraints of using SQLalchemy along
 
 
 ## Systems Integration and Build
-
+* AWS RDS Relational Database Service  was used to deploy database 
+* Environmental variable was set for the cconnection between RDS and web app
+* Amazon Elastic Compute Cloud was used to host CI server Jenkins and deploy the application 
+* Jenkins is used to achieve Continuous Integration by building an automated project
+* Enviorment variable was built, virtual enviorment was activated for testing the application
+* Application was tested automatically via Jenkins
+* Deploymennt was achieved by exporting, and deploying Python package as artifact to AWS EC2 and the web app become operative and avaliable for further development and deplloyment.
+* The build was successful as evidenced on github project issue # 7( detailss see https://github.com/AbbyXSu/Bucket_List_Budgeter/issues/7#issuecomment-774941862 )
 
 ## Risk Assessment
 
